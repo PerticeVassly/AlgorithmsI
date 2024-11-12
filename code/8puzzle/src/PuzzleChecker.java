@@ -1,4 +1,3 @@
-package src;
 /******************************************************************************
  *  Compilation:  javac-algs4 PuzzleChecker.java
  *  Execution:    java-algs4 PuzzleChecker filename1.txt filename2.txt ...

@@ -1,8 +1,10 @@
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class Board {
 
-    int size;
+    int dimension;
     private int[][] data; 
 
     // create a board from an n-by-n array of tiles,
@@ -14,21 +16,17 @@ public class Board {
                 data[i][j] = tiles[i][j];
             }
         }
-        this.size = tiles.length;
+        this.dimension = tiles.length;
         return;
     }
                                            
     // string representation of this board
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(size + "\n");
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
-                if (j == size - 1) {
-                    sb.append(data[i][j]);
-                } else {
-                    sb.append(data[i][j] + " ");
-                }
+        sb.append(dimension + "\n");
+        for (int i = 0; i < dimension; i++) {
+            for (int j = 0; j < dimension; j++) {
+                sb.append(" " + data[i][j]);
             }
             sb.append("\n");
         }
@@ -37,47 +35,47 @@ public class Board {
 
     // board dimension n
     public int dimension() {
-        return size;
+        return this.dimension;
     }
 
     // number of tiles out of place
     public int hamming() {
-        int count = 0;
+        int hamming = 0;
         int goal = 1;
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
+        for (int i = 0; i < dimension; i++) {
+            for (int j = 0; j < dimension; j++) {
                 if (data[i][j] != 0 && data[i][j] != goal) {
-                    count++;
+                    hamming++;
                 }
                 goal++;
             }
         }
-        return count;
+        return hamming;
     }
 
     // sum of Manhattan distances between tiles and goal
     public int manhattan() {
-        int count = 0;
+        int manhattan = 0;
         int goal = 1;
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
+        for (int i = 0; i < dimension; i++) {
+            for (int j = 0; j < dimension; j++) {
                 if (data[i][j] != 0 && data[i][j] != goal) {
-                    int row = (data[i][j] - 1) / size;
-                    int col = (data[i][j] - 1) % size;
-                    count += Math.abs(row - i) + Math.abs(col - j);
+                    int row = (data[i][j] - 1) / dimension;
+                    int col = (data[i][j] - 1) % dimension;
+                    manhattan += Math.abs(row - i) + Math.abs(col - j);
                 }
                 goal++;
             }
         }
-        return count;
+        return manhattan;
     }
 
     // is this board the goal board?
     public boolean isGoal() {
         int goal = 1;
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
-                if (data[i][j] != goal) {
+        for (int i = 0; i < dimension; i++) {
+            for (int j = 0; j < dimension; j++) {
+                if (data[i][j] != 0 && data[i][j] != goal) {
                     return false;
                 }
                 goal++;
@@ -98,11 +96,11 @@ public class Board {
             return false;
         }
         Board that = (Board) y;
-        if (that.size != this.size) {
+        if (that.dimension != this.dimension) {
             return false;
         }
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
+        for (int i = 0; i < dimension; i++) {
+            for (int j = 0; j < dimension; j++) {
                 if (that.data[i][j] != this.data[i][j]) {
                     return false;
                 }
@@ -113,85 +111,46 @@ public class Board {
 
     // all neighboring boards
     public Iterable<Board> neighbors() {
-        return new NeighborsList();
-    }
+        List<Board> neighborsList = new ArrayList<>();
+        int row = 0, col = 0;
 
-    class NeighborsList implements Iterable<Board> {
-
-        Board[] neighbors = new Board[4];
-        int num = 0;
-
-        NeighborsList() {
-            int row = 0;
-            int col = 0;
-            int[][] tmp = new int[size][size];
-            for (int i = 0; i < size; i++) {
-                for (int j = 0; j < size; j++) {
-                    tmp[i][j] = data[i][j];
-                    if (data[i][j] == 0) {
-                        row = i;
-                        col = j;
-                    }
+        for (int i = 0; i < dimension; i++) {
+            for (int j = 0; j < dimension; j++) {
+                if (data[i][j] == 0) {
+                    row = i;
+                    col = j;
+                    break;
                 }
             }
-
-            //try to exchange with left right up down
-            if (row > 0) {
-                tmp[row][col] = tmp[row - 1][col];
-                tmp[row - 1][col] = 0;
-                neighbors[num++] = new Board(tmp);
-                tmp[row - 1][col] = tmp[row][col];
-                tmp[row][col] = 0;
-            }
-            if (row < size - 1) {
-                tmp[row][col] = tmp[row + 1][col];
-                tmp[row + 1][col] = 0;
-                neighbors[num++] = new Board(tmp);
-                tmp[row + 1][col] = tmp[row][col];
-                tmp[row][col] = 0;
-            }
-            if (col > 0) {
-                tmp[row][col] = tmp[row][col - 1];
-                tmp[row][col - 1] = 0;
-                neighbors[num++] = new Board(tmp);
-                tmp[row][col - 1] = tmp[row][col];
-                tmp[row][col] = 0;
-            }
-            if (col < size - 1) {
-                tmp[row][col] = tmp[row][col + 1];
-                tmp[row][col + 1] = 0;
-                neighbors[num++] = new Board(tmp);
-                tmp[row][col + 1] = tmp[row][col];
-                tmp[row][col] = 0;
-            }
         }
 
-        @Override
-        public Iterator<Board> iterator() {
-            return new NeighborsIterator();
-        }
-
-        class NeighborsIterator implements Iterator<Board> {
-
-            int current = 0;
-
-            @Override
-            public boolean hasNext() {
-                return current < num;
-            }
-
-            @Override
-            public Board next() {
-                return neighbors[current++];
+        int[][] directions = { {-1, 0}, {1, 0}, {0, -1}, {0, 1} };
+        for (int[] dir : directions) {
+            int newRow = row + dir[0];
+            int newCol = col + dir[1];
+            if (newRow >= 0 && newRow < dimension && newCol >= 0 && newCol < dimension) {
+                int[][] tmp = copyData(data);
+                tmp[row][col] = tmp[newRow][newCol];
+                tmp[newRow][newCol] = 0;
+                neighborsList.add(new Board(tmp));
             }
         }
+        return neighborsList;
+    }
+
+    private int[][] copyData(int[][] data) {
+        int[][] copy = new int[dimension][dimension];
+        for (int i = 0; i < dimension; i++) {
+            System.arraycopy(data[i], 0, copy[i], 0, dimension);
+        }
+        return copy;
     }
 
     // a board that is obtained by exchanging any pair of tiles
     public Board twin() {
-        int[][] tmp = new int[size][size];
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
+        int[][] tmp = new int[dimension][dimension];
+        for (int i = 0; i < dimension; i++) {
+            for (int j = 0; j < dimension; j++) {
                 tmp[i][j] = data[i][j];
             }
         }
@@ -238,5 +197,10 @@ public class Board {
 
         System.out.println("test twin");
         System.out.println(b1.twin().toString());
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.deepHashCode(data);
     }
 }
