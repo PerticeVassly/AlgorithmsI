@@ -1,22 +1,25 @@
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class Board {
 
-    int dimension;
-    private int[][] data; 
+    private int dimension;
+    private int[][] titles; 
+    private int hamming;
+    private int manhattan;
 
     // create a board from an n-by-n array of tiles,
     // where tiles[row][col] = tile at (row, col)
     public Board(int[][] tiles) {
-        data = new int[tiles.length][tiles.length];
+        titles = new int[tiles.length][tiles.length];
         for (int i = 0; i < tiles.length; i++) {
             for (int j = 0; j < tiles.length; j++) {
-                data[i][j] = tiles[i][j];
+                titles[i][j] = tiles[i][j];
             }
         }
         this.dimension = tiles.length;
+        this.hamming = calHamming();
+        this.manhattan = calManhattan();
         return;
     }
                                            
@@ -26,7 +29,7 @@ public class Board {
         sb.append(dimension + "\n");
         for (int i = 0; i < dimension; i++) {
             for (int j = 0; j < dimension; j++) {
-                sb.append(" " + data[i][j]);
+                sb.append(" " + titles[i][j]);
             }
             sb.append("\n");
         }
@@ -39,35 +42,43 @@ public class Board {
     }
 
     // number of tiles out of place
-    public int hamming() {
-        int hamming = 0;
+    private int calHamming() {
+        int hammingCount = 0;
         int goal = 1;
         for (int i = 0; i < dimension; i++) {
             for (int j = 0; j < dimension; j++) {
-                if (data[i][j] != 0 && data[i][j] != goal) {
-                    hamming++;
+                if (titles[i][j] != 0 && titles[i][j] != goal) {
+                    hammingCount++;
                 }
                 goal++;
             }
         }
-        return hamming;
+        return hammingCount;
+    }
+
+    public int hamming() {
+        return this.hamming;
     }
 
     // sum of Manhattan distances between tiles and goal
-    public int manhattan() {
-        int manhattan = 0;
+    private int calManhattan() {
+        int manhattanCount = 0;
         int goal = 1;
         for (int i = 0; i < dimension; i++) {
             for (int j = 0; j < dimension; j++) {
-                if (data[i][j] != 0 && data[i][j] != goal) {
-                    int row = (data[i][j] - 1) / dimension;
-                    int col = (data[i][j] - 1) % dimension;
-                    manhattan += Math.abs(row - i) + Math.abs(col - j);
+                if (titles[i][j] != 0 && titles[i][j] != goal) {
+                    int row = (titles[i][j] - 1) / dimension;
+                    int col = (titles[i][j] - 1) % dimension;
+                    manhattanCount += Math.abs(row - i) + Math.abs(col - j);
                 }
                 goal++;
             }
         }
-        return manhattan;
+        return manhattanCount;
+    }
+
+    public int manhattan() {
+        return this.manhattan;
     }
 
     // is this board the goal board?
@@ -75,7 +86,7 @@ public class Board {
         int goal = 1;
         for (int i = 0; i < dimension; i++) {
             for (int j = 0; j < dimension; j++) {
-                if (data[i][j] != 0 && data[i][j] != goal) {
+                if (titles[i][j] != 0 && titles[i][j] != goal) {
                     return false;
                 }
                 goal++;
@@ -101,7 +112,7 @@ public class Board {
         }
         for (int i = 0; i < dimension; i++) {
             for (int j = 0; j < dimension; j++) {
-                if (that.data[i][j] != this.data[i][j]) {
+                if (that.titles[i][j] != this.titles[i][j]) {
                     return false;
                 }
             }
@@ -116,7 +127,7 @@ public class Board {
 
         for (int i = 0; i < dimension; i++) {
             for (int j = 0; j < dimension; j++) {
-                if (data[i][j] == 0) {
+                if (titles[i][j] == 0) {
                     row = i;
                     col = j;
                     break;
@@ -129,7 +140,7 @@ public class Board {
             int newRow = row + dir[0];
             int newCol = col + dir[1];
             if (newRow >= 0 && newRow < dimension && newCol >= 0 && newCol < dimension) {
-                int[][] tmp = copyData(data);
+                int[][] tmp = copyData(titles);
                 tmp[row][col] = tmp[newRow][newCol];
                 tmp[newRow][newCol] = 0;
                 neighborsList.add(new Board(tmp));
@@ -151,7 +162,7 @@ public class Board {
         int[][] tmp = new int[dimension][dimension];
         for (int i = 0; i < dimension; i++) {
             for (int j = 0; j < dimension; j++) {
-                tmp[i][j] = data[i][j];
+                tmp[i][j] = titles[i][j];
             }
         }
         if (tmp[0][0] != 0 && tmp[0][1] != 0) {
@@ -177,17 +188,17 @@ public class Board {
         System.out.println(b1.dimension());
 
         System.out.println("test hamming");
-        System.out.println(b1.hamming());
+        System.out.println(b1.calHamming());
 
         System.out.println("test manhattan");
-        System.out.println(b1.manhattan());
+        System.out.println(b1.calManhattan());
 
         System.out.println("test isGoal");
         System.out.println(b1.isGoal());
 
         System.out.println("test equals");
-        int new_data[][] = {{1, 2, 3}, {4, 5, 6}, {7, 8, 0}};
-        Board b2 = new Board(new_data);
+        int newData[][] = {{1, 2, 3}, {4, 5, 6}, {7, 8, 0}};
+        Board b2 = new Board(newData);
         System.out.println(b1.equals(b2));
 
         System.out.println("test neighbors");
@@ -197,10 +208,5 @@ public class Board {
 
         System.out.println("test twin");
         System.out.println(b1.twin().toString());
-    }
-
-    @Override
-    public int hashCode() {
-        return Arrays.deepHashCode(data);
     }
 }

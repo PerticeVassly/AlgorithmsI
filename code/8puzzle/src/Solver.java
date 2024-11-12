@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.HashSet;
 import edu.princeton.cs.algs4.MinPQ;
 import java.util.Collections;
 import edu.princeton.cs.algs4.In;
@@ -8,11 +7,10 @@ import edu.princeton.cs.algs4.StdOut;
 public class Solver {
 
     private Board firstStep;
-    private MinPQ<Node> pq = new MinPQ<Node>();
     private boolean isSolvable = false;
     private ArrayList<Board> solution = new ArrayList<Board>();
 
-    class Node implements Comparable<Node> {
+    private class Node implements Comparable<Node> {
        
         private Board board;
         private Node parent;
@@ -23,7 +21,7 @@ public class Solver {
             this.board = board;
             this.parent = parent;
             this.moves = moves;
-            this.priority = board.hamming() + moves;
+            this.priority = board.manhattan() + moves;
         } 
         
         @Override
@@ -34,6 +32,9 @@ public class Solver {
 
     // find a solution to the initial board (using the A* algorithm)
     public Solver(Board initial) {
+        if (initial == null) {
+            throw new IllegalArgumentException("Null argument");
+        }
         firstStep = initial;
         Node lastNode = solve();
         if (lastNode != null) {
@@ -54,19 +55,35 @@ public class Solver {
 
     private Node solve() {
         // every move just change one tile if it change to the right place then priority is - 1 and + 1 maintain.
-        HashSet<Board> visited = new HashSet<Board>();
+        // ArrayList<Board> visited = new ArrayList<Board>();
+        // visited.add(firstStep);
+        Board twin = firstStep.twin();
+        MinPQ<Node> pq = new MinPQ<Node>();
+        MinPQ<Node> twinPQ = new MinPQ<Node>();
         pq.insert(new Node(firstStep, null, 0));
-        while(!pq.isEmpty()) {
+        twinPQ.insert(new Node(twin, null, 0));
+        while (!pq.isEmpty()) {
             Node toRemove = pq.delMin();
+            Node twinToRemove = twinPQ.delMin();
             if (toRemove.board.isGoal()) {
                 return toRemove;
             } else {
                 for (Board neighbor : toRemove.board.neighbors()) {
-                   //add all unvisited neighbors to the priority queue
-                    if (!visited.contains(neighbor)) {
+                    // add all unvisited neighbors to the priority queue                    
+                    if (toRemove.parent == null || !neighbor.equals(toRemove.parent.board)) {
                         pq.insert(new Node(neighbor, toRemove, toRemove.moves + 1));
-                        visited.add(neighbor);
-                    }
+                    }    
+                }
+            }
+
+            if (twinToRemove.board.isGoal()) {
+                return null;
+            } else {
+                for (Board neighbor : twinToRemove.board.neighbors()) {
+                    // add all unvisited neighbors to the priority queue                    
+                    if (twinToRemove.parent == null || !neighbor.equals(twinToRemove.parent.board)) {
+                        twinPQ.insert(new Node(neighbor, twinToRemove, twinToRemove.moves + 1));
+                    }    
                 }
             }
         }

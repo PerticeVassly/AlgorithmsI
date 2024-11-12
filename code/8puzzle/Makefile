@@ -12,7 +12,7 @@ compile:
 	javac $(JAVAC_FLAG) $(SRC_FILES)
 
 zip:
-	zip 8puzzle.zip $(SRC_FILES)
+	zip 8puzzle.zip $(SRC_PATH)Board.java $(SRC_PATH)Solver.java
 
 test: compile
 	java -cp $(LIB_PATH):$(OUT_PATH) Solver $(TEST_PATH)$(TEST_FILE)
