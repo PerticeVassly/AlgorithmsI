@@ -1,7 +1,6 @@
 import edu.princeton.cs.algs4.Point2D;
 import edu.princeton.cs.algs4.RectHV;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 
 public class KdTree {
@@ -183,7 +182,7 @@ public class KdTree {
         if (inLeft) {
             ld = lRect.distanceSquaredTo(query);
             if (!(ld > closestDist)) nearestHelper(query, lRect, node.left, depth + 1);
-            rd = lRect.distanceSquaredTo(query);
+            rd = rRect.distanceSquaredTo(query);
             if (!(rd > closestDist)) nearestHelper(query, rRect, node.right, depth + 1);
         }
         else {
@@ -211,7 +210,7 @@ public class KdTree {
         kdtree.insert(new Point2D(0.2, 0.3));
         kdtree.insert(new Point2D(0.4, 0.7));
         kdtree.insert(new Point2D(0.9, 0.6));
-        kdtree.nearest(new Point2D(0.9, 0.6));
+        kdtree.nearest(new Point2D(0.4, 0.7));
         return;
     }
 }
