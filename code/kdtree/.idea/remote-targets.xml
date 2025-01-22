@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="RemoteTargetsManager">
+    <option name="projectDefaultTargetUuid" value="41ffd6aa-b61e-41b4-9c6c-86f2ae920d26" />
+    <targets>
+      <target name="WSL - Ubuntu-22.04" type="wsl" uuid="41ffd6aa-b61e-41b4-9c6c-86f2ae920d26">
+        <config>
+          <option name="distributionMsId" value="Ubuntu-22.04" />
+          <option name="projectRootOnTarget" value="{exitCode=0, timeout=false, cancelled=false, stdout=wsl: �hKm0R localhost �NtM�n�FO*g\��P0R WSL0NAT !j_N�v WSL &#13;N/ec localhost �Nt0&#13;&#10;/mnt/d/engineeringtools/jetbrains/IntelliJ IDEA Ultimate/jbr/bin&#10;, stderr=}/K-d Trees" />
+        </config>
+        <ContributedStateBase type="JavaLanguageRuntime">
+          <config>
+            <option name="agentFolder">
+              <VolumeState>
+                <option name="remotePath" value="-ea" />
+              </VolumeState>
+            </option>
+            <option name="homePath" value="/usr/lib/jvm/java-11-openjdk-amd64/" />
+            <option name="javaVersionString" value="11" />
+          </config>
+        </ContributedStateBase>
+      </target>
+    </targets>
+  </component>
+</project>
