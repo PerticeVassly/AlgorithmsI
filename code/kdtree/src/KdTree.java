@@ -178,23 +178,19 @@ public class KdTree {
             lRect = new RectHV(xmin, ymin, xmax, nowy);
             inLeft = qy < nowy;    
         }
-        double ld = lRect.distanceSquaredTo(query);
-        if (ld > closestDist) {
-            nearestHelper(query, rRect, node.right, depth + 1);
-            return;
-        }
-        double rd = rRect.distanceSquaredTo(query);
-        if (rd > closestDist) {
-            nearestHelper(query, lRect, node.left, depth + 1);
-            return;
-        }
+        double ld = 0.0;
+        double rd = 0.0;
         if (inLeft) {
-            nearestHelper(query, lRect, node.left, depth + 1);
-            if (closestDist != 0) nearestHelper(query, rRect, node.right, depth + 1);
+            ld = lRect.distanceSquaredTo(query);
+            if (!(ld > closestDist)) nearestHelper(query, lRect, node.left, depth + 1);
+            rd = lRect.distanceSquaredTo(query);
+            if (!(rd > closestDist)) nearestHelper(query, rRect, node.right, depth + 1);
         }
         else {
-            nearestHelper(query, rRect, node.right, depth + 1);
-            if (closestDist != 0) nearestHelper(query, lRect, node.left, depth + 1);
+            rd = rRect.distanceSquaredTo(query);
+            if (!(rd > closestDist)) nearestHelper(query, rRect, node.right, depth + 1);
+            ld = lRect.distanceSquaredTo(query);
+            if (!(ld > closestDist)) nearestHelper(query, lRect, node.left, depth + 1);
         }
         return;
     }
